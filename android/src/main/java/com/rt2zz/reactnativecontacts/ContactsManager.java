@@ -427,43 +427,6 @@ public class ContactsManager extends ReactContextBaseJavaModule implements Activ
     }
 
     /*
-     * Open contact in native app and pre-fill new numbers
-     */
-    @ReactMethod
-    public void addNumbersToExistingContact(ReadableMap contact, Callback callback) {
-
-        String recordID = contact.hasKey("recordID") ? contact.getString("recordID") : null;
-        ReadableArray phoneNumbers = contact.hasKey("phoneNumbers") ? contact.getArray("phoneNumbers") : null;
-
-        try {
-
-            Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_URI, recordID);
-            Intent intent = new Intent(Intent.ACTION_EDIT);
-            intent.setDataAndType(uri, ContactsContract.Contacts.CONTENT_ITEM_TYPE);
-            intent.putExtra("finishActivityOnSaveCompleted", true);
-
-            int numOfPhones = 0;
-            if (phoneNumbers != null) {
-                numOfPhones = phoneNumbers.size();
-                for (int i = 0; i < numOfPhones; i++) {
-                    String phoneNumber = phoneNumbers.getMap(i).getString("number");
-                    String label = phoneNumbers.getMap(i).getString("label");
-                    Integer mappedLabel = mapStringToPhoneType(label);
-
-                    intent.putExtra(ContactsContract.Intents.Insert.NAME, mappedLabel);
-                    intent.putExtra(ContactsContract.Intents.Insert.PHONE, phoneNumber);
-                }
-            }
-
-            updateContactCallback = callback;
-            getReactApplicationContext().startActivityForResult(intent, REQUEST_OPEN_EXISTING_CONTACT, Bundle.EMPTY);
-
-        } catch (Exception e) {
-            callback.invoke(e.toString());
-        }
-    }
-
-    /*
      * Adds contact to phone's addressbook
      */
     @ReactMethod
