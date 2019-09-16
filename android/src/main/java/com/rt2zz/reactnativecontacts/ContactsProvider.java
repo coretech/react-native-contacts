@@ -145,6 +145,10 @@ public class ContactsProvider {
 
     public WritableMap getContactById(String contactId) {
 
+        if (contactId == null) {
+            return null;
+        }
+
         Map<String, Contact> matchingContacts;
         {
             Cursor cursor = contentResolver.query(
